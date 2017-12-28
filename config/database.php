@@ -1,22 +1,17 @@
 <?php
-/**
- * GitScrum v0.1.
- *
- * @author  Renato Marinho <renato.marinho@s2move.com>
- * @license http://opensource.org/licenses/GPL-3.0 GPLv3
- */
 
 return [
 
     'relation' => [
-        'attachment' => \GitScrum\Models\Attachment::class,
-        'label' => \GitScrum\Models\Label::class,
-        'comment' => \GitScrum\Models\Comment::class,
-        'note' => \GitScrum\Models\Note::class,
-        'issue' => \GitScrum\Models\Issue::class,
-        'product_backlog' => \GitScrum\Models\ProductBacklog::class,
-        'sprint' => \GitScrum\Models\Sprint::class,
-        'user_story' => \GitScrum\Models\UserStory::class,
+        'attachments' => \GitScrum\Models\Attachment::class,
+        'labels' => \GitScrum\Models\Label::class,
+        'comments' => \GitScrum\Models\Comment::class,
+        'notes' => \GitScrum\Models\Note::class,
+        'issues' => \GitScrum\Models\Issue::class,
+        'product_backlogs' => \GitScrum\Models\ProductBacklog::class,
+        'sprints' => \GitScrum\Models\Sprint::class,
+        'users' => \GitScrum\Models\User::class,
+        'user_stories' => \GitScrum\Models\UserStory::class,
     ],
 
     /*
@@ -43,7 +38,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' => env('DB_CONNECTION', 'mysql'),
 
     /*
     |--------------------------------------------------------------------------

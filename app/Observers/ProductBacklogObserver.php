@@ -1,10 +1,4 @@
 <?php
-/**
- * GitScrum v0.1.
- *
- * @author  Renato Marinho <renato.marinho@s2move.com>
- * @license http://opensource.org/licenses/GPL-3.0 GPLv3
- */
 
 namespace GitScrum\Observers;
 
@@ -17,32 +11,45 @@ class ProductBacklogObserver
 {
     public function creating(ProductBacklog $productBacklog)
     {
-        $productBacklog->user_id = Auth::user()->id;
+        if (!isset($productBacklog->user_id)) {
+            $productBacklog->user_id = Auth::user()->id;
+        }
+
+        if (isset($productBacklog->is_api)) {
+            $productBacklog->provider_id = mt_rand(0,9999999);
+        }
         $productBacklog->slug = Helper::slug($productBacklog->title);
         if (isset($productBacklog->is_api)) {
             $owner = Organization::find($productBacklog->organization_id);
-            $productBacklog::$tmp = app('GithubClass')->createOrUpdateRepository($owner->username, $productBacklog);
+            $productBacklog::$tmp = app(Auth::user()->provider)->createOrUpdateRepository($owner->username, $productBacklog);
         }
     }
 
     public function created(ProductBacklog $productBacklog)
     {
         if (isset($productBacklog->is_api)) {
-            $template = app('GithubClass')->templateRepository($productBacklog::$tmp, $productBacklog->slug);
-            $obj = ProductBacklog::where('slug', $template->slug)->first();
-            $obj->update(get_object_vars($template));
+            $template = app(Auth::user()->provider)->tplRepository($productBacklog::$tmp, $productBacklog->slug);
+            if (! is_null($template)) {
+                $obj = ProductBacklog::slug($template->slug)->first();
+                unset($template->organization_title);
+                $obj->update(get_object_vars($template));
+            }
             $productBacklog::$tmp = null;
         }
+
     }
 
     public function updating(ProductBacklog $productBacklog)
     {
         $oldRepos = ProductBacklog::find($productBacklog->id);
         $owner = Organization::find($productBacklog->organization_id);
-        $repos = app('GithubClass')->createOrUpdateRepository($owner->username, $productBacklog, $oldRepos->title);
-        $productBacklog->html_url = $repos->html_url;
-        $productBacklog->ssh_url = $repos->ssh_url;
-        $productBacklog->clone_url = $repos->clone_url;
-        $productBacklog->url = $repos->url;
+        $repos = app(Auth::user()->provider)->createOrUpdateRepository($owner->username, $productBacklog, $oldRepos->title);
+        // skip update if repos object is null to prevent error
+        if (! is_null($repos)) {
+            $productBacklog->html_url = $repos->html_url;
+            $productBacklog->ssh_url = $repos->ssh_url;
+            $productBacklog->clone_url = $repos->clone_url;
+            $productBacklog->url = $repos->url;
+        }
     }
 }

@@ -1,8 +1,13 @@
-<div class="project-list">
-    <table class="table table-hover">
+@if(!empty($list[0]))
+    <table class="table table-user-story">
         <tbody>
-        @each('partials.lists.user-stories', $list, 'list', 'partials.lists.no-items')
+        @each('partials.lists.user-stories', $list->sortByDesc('favorite') , 'list', 'partials.lists.no-items')
         </tbody>
     </table>
-    {{ $list->links() }}
-</div>
+    @if(!empty($list->setPath('')->links()))
+    {{$list->setPath('')->links()}}
+    @endif
+@else
+    @include('errors.notification-message', ['notification' => ['message' => trans('gitscrum.you-are-have-not-user-story'),
+        'alert' => 'warning', 'class' => 'padding-none list-user-story-empty']])
+@endif

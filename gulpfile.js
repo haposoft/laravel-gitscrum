@@ -11,10 +11,20 @@ var phpcs = require('gulp-phpcs');
 var shell = require('gulp-shell');
 
 gulp.task('less-core', function () {
-    return gulp.src(['./resources/assets/core/less/*','./resources/assets/vendors/css/*'])
+    return gulp.src(['./resources/assets/core/less/*','./resources/assets/core/less/**/*','./resources/assets/vendors/css/*'])
         .pipe(sourcemaps.init())
         .pipe(less())
         .pipe(concat('core.css'))
+        .pipe(cleanCSS())
+        .pipe(sourcemaps.write('./maps'))
+        .pipe(gulp.dest('./public/css'));
+});
+
+gulp.task('less-colors', function () {
+    return gulp.src(['./resources/assets/core/less/colors/*'])
+        .pipe(sourcemaps.init())
+        .pipe(less())
+        .pipe(concat('colors.css'))
         .pipe(cleanCSS())
         .pipe(sourcemaps.write('./maps'))
         .pipe(gulp.dest('./public/css'));
@@ -39,7 +49,7 @@ gulp.task('phpcs', function () {
 
 gulp.task('phpcbf', shell.task(['vendor/bin/phpcbf --standard=PSR2 --ignore=vendor/,node_modules/,storage/ .']));
 
-gulp.task('develop', ['less-core','javascript']);
+gulp.task('develop', ['less-core', 'less-colors', 'javascript']);
 gulp.task('develop-phpcs', ['less-core','javascript','phpcs','phpcbf']);
 
 gulp.task('watch', function () {

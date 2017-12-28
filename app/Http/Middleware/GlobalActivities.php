@@ -1,10 +1,4 @@
 <?php
-/**
- * GitScrum v0.1.
- *
- * @author  Renato Marinho <renato.marinho@s2move.com>
- * @license http://opensource.org/licenses/GPL-3.0 GPLv3
- */
 
 namespace GitScrum\Http\Middleware;
 
@@ -23,7 +17,7 @@ class GlobalActivities
      */
     public function handle($request, Closure $next)
     {
-        $sprint = Sprint::where('slug', $request->slug)
+        $sprint = Sprint::slug($request->slug)
             ->with('issues.statuses')
             ->first();
 

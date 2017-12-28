@@ -1,17 +1,17 @@
-@section('title',  trans('Dashboard'))
+@section('title',  trans('gitscrum.dashboard'))
 
-@extends('layouts.master')
+@extends('layouts.master', ['bodyClass' => 'body-dashboard'])
 
 @section('breadcrumb')
 
 <div class="col-lg-6">
-    <h3>{{trans('Dashboard')}}</h3>
+    <h3>{{trans('gitscrum.dashboard')}}</h3>
 </div>
 
 <div class="col-lg-6 text-right">
     <div class="btn-group">
         <a href="{{route('wizard.step1')}}" class="btn btn-sm btn-primary">
-            {{trans('Update Repositories')}}</a>
+            {{trans('gitscrum.update-repositories')}}</a>
     </div>
 </div>
 
@@ -19,54 +19,86 @@
 
 @section('content')
 
-<div class="dashboard-tile">
+<div class="gs-card">
 
-    <div class="col-lg-3 col-sm-6">
-        <div class="tile">
-            <i class="fa fa-trophy fa-4x" aria-hidden="true"></i>
-            <h3 class="tile-title mtm">62</h3>
-            <p>Effort</p>
-            <a class="btn btn-primary btn-large btn-block" href="#">My Activities</a>
-        </div>
+    <div class="gs-card-content-title">
+
     </div>
 
-    <div class="col-lg-3 col-sm-6">
-        <div class="tile">
-            <i class="fa fa-th fa-4x" aria-hidden="true"></i>
-            <h3 class="tile-title mtm">{{$user->issues()->count()}}</h3>
-            <p>{{trans('Issues')}}</p>
-            <a class="btn btn-primary btn-large btn-block"
-                href="{{route('issues.index',['slug' => 0])}}">
-                {{trans('My Planning')}}</a>
+    <div class="col-lg-4">
+
+        <div class="gs-card-content-title">
+            <h5>Team Performance
+            <small>+25pts last week</small></h5>
+            <h6 class="high">High</h6>
         </div>
+
     </div>
 
-    <div class="col-lg-6 col-sm-12">
-        <div class="tile tile-sprint">
-            <h3 class="tile-title mtm">{{trans('Sprints')}}</h3>
-            @foreach ($sprints as $key => $sprint)
-            <div class="">
-                <a href="{{route('sprints.show', ['slug'=>$sprint->slug])}}">
-                    <strong>{{$sprint->title}}</strong>
-                    <span>{{$sprint->timebox}}
-                    ({{Helper::percentage($sprint, 'issues')}}% {{trans('completed')}})</span></a>
-                <div class="progress">
-                    <div class="progress-bar" style="width: {{Helper::percentage($sprint, 'issues')}}%;"></div>
-                </div>
-            </div>
-            @endforeach
+    <div class="col-lg-4 border-right border-left">
+
+        <div class="gs-card-content-title">
+            <h5>Completed Tasks
+                <small>vs. new tasks</small></h5>
+            <h6>20 <small>/32</small></h6>
         </div>
+
+    </div>
+
+    <div class="col-lg-4">
+
+        <div class="gs-card-content-title">
+            <h5>New Bugs
+                <small>vs. new tasks</small></h5>
+            <h6 class="low">1%</h6>
+        </div>
+
     </div>
 
 </div>
 
-<div class="col-lg-12">
 
-    <table class="table table-hover issue-tracker">
-        <tbody>
-        @each('partials.lists.issues', $user->issues->where('closed_at', null), 'list', 'partials.lists.no-items')
-        </tbody>
-    </table>
+<div class="col-lg-12 graph-main gs-card">
+    <h4 class="gs-card-title">{{trans('gitscrum.burndown')}}</h4>
+    @include('partials.boxes.burndown', ['list' => Helper::burndown($user, 5), 'height' => 240])
+</div>
+
+<div class="col-lg-3 gs-card flat">
+
+    <div class="shortcuts">
+        <h4 class="gs-card-title">{{trans('gitscrum.shortcuts')}}</h4>
+        <div class="gs-card-content">
+            <a href="{{route('issues.index',['slug' => 0])}}">{{trans('gitscrum.my-planning')}}</a>
+            <a href="{{route('wizard.step1')}}">{{trans('gitscrum.sync-repos-issues')}}</a>
+        </div>
+    </div>
+
+    @include('partials.boxes.team', ['list'=>$user->team(), 'title'=>trans('gitscrum.team')])
+
+    @include('partials.boxes.note', [ 'list' => $user,
+        'type'=> 'users', 'title' => trans('gitscrum.quick-notes'),
+        'percentage' => Helper::percentage($user, 'notes')])
+</div>
+
+
+<div class="col-lg-9 gs-card flat">
+    <div>
+        <h4 class="gs-card-title">{{trans('gitscrum.current-sprints-backlog')}} <a href="{{route('sprints.create')}}"
+             class="btn btn-default btn-sm pull-right" data-toggle="modal" data-target="#modalLarge"
+             role="button">{{trans('gitscrum.create-sprint-backlog')}}</a></h4>
+        <div class="gs-card-content">
+            @include('partials.boxes.sprint', [ 'list' => $sprints, 'column' => $sprintColumns ])
+        </div>
+    </div>
+
+    <div>
+        <div class="activities">
+            <h4 class="gs-card-title">{{trans('gitscrum.lastest-activities')}}</h4>
+            <div class="gs-card-content">
+                @each('partials.lists.activities-complete', $user->activities(null, 7), 'activity', 'partials.lists.no-items')
+            </div>
+        </div>
+    </div>
 
 </div>
 

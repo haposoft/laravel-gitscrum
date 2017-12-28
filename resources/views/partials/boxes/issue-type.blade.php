@@ -1,7 +1,7 @@
-<div class="">
-    <h6>{{trans('Issue Types')}}</h6>
-    <ul class="tag-list list-inline" style="padding: 0">
+<h4 class="gs-card-title">{{trans('gitscrum.issue-types')}}</h4>
+
+<div class="gs-card-content">
+    <ul class="tag-list list-inline">
         @each('partials.lists.issue-types', $list, 'list')
     </ul>
-    <div class="clearfix"></div>
 </div>

@@ -1,10 +1,4 @@
 <?php
-/**
- * GitScrum v0.1.
- *
- * @author  Renato Marinho <renato.marinho@s2move.com>
- * @license http://opensource.org/licenses/GPL-3.0 GPLv3
- */
 
 namespace GitScrum\Providers;
 
@@ -20,6 +14,7 @@ use GitScrum\Models\ProductBacklog;
 use GitScrum\Models\Sprint;
 use GitScrum\Models\Status;
 use GitScrum\Models\UserStory;
+use GitScrum\Models\Organization;
 use GitScrum\Observers\AttachmentObserver;
 use GitScrum\Observers\BranchObserver;
 use GitScrum\Observers\CommentObserver;
@@ -31,6 +26,7 @@ use GitScrum\Observers\ProductBacklogObserver;
 use GitScrum\Observers\SprintObserver;
 use GitScrum\Observers\StatusObserver;
 use GitScrum\Observers\UserStoryObserver;
+use GitScrum\Observers\OrganizationObserver;
 
 class ModelObserverProvider extends ServiceProvider
 {
@@ -47,6 +43,7 @@ class ModelObserverProvider extends ServiceProvider
         Sprint::observe(SprintObserver::class);
         Status::observe(StatusObserver::class);
         UserStory::observe(UserStoryObserver::class);
+        Organization::observe(OrganizationObserver::class);
     }
 
     public function register()
